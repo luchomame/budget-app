@@ -3,6 +3,7 @@ import { createClient } from "~/db/supabase/server";
 import type { Route } from "./+types/index";
 import { useLoaderData } from "react-router";
 import { supabase } from "~/db/supabase/client";
+import { SiteHeader } from "~/components/dashboard/site-header";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { supabase } = createClient(request);
@@ -22,21 +23,21 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-    const { data, error } = await supabase.from("expenses").select("*");
+      const { data, error } = await supabase.from("expenses").select("*");
 
-    if (error) {
-      console.error("Error fetching expenses:", error);
-    } else {
-      console.log("Fetched expenses:", data);
-    }
-    }
+      if (error) {
+        console.error("Error fetching expenses:", error);
+      } else {
+        console.log("Fetched expenses:", data);
+      }
+    };
 
     fetchData();
-  } , []);
+  }, []);
 
-  
   return (
     <div>
+      <SiteHeader header="Home" />
       <h1>Debts</h1>
       <ul>
         {debts.map((debt) => (

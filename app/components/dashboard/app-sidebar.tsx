@@ -1,28 +1,30 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconCamera,
-  IconChartBar,
-  IconDashboard,
+  IconCreditCardPay,
+  IconBuildingBank,
   IconDatabase,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
+  IconChartLine,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
+  IconReceiptDollar,
   IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
-} from "@tabler/icons-react"
+  IconPigMoney,
+  IconHome,
+  IconHours24,
+} from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/dashboard/nav-documents"
-import { NavMain } from "@/components/dashboard/nav-main"
-import { NavSecondary } from "@/components/dashboard/nav-secondary"
-import { NavUser } from "@/components/dashboard/nav-user"
+import { NavDocuments } from "@/components/dashboard/nav-documents";
+import { NavMain } from "@/components/dashboard/nav-main";
+import { NavSecondary } from "@/components/dashboard/nav-secondary";
+import { NavUser } from "@/components/dashboard/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -31,7 +33,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -41,29 +43,39 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
+      title: "Home",
+      url: "/",
+      icon: IconHome,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
+      title: "Accounts",
+      url: "/accounts",
+      icon: IconBuildingBank,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Debts",
+      url: "/debts",
+      icon: IconCreditCardPay,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
+      title: "Investments",
+      url: "/investments",
+      icon: IconChartLine,
     },
     {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
+      title: "Paychecks",
+      url: "/paychecks",
+      icon: IconReceiptDollar,
+    },
+    {
+      title: "Recurring",
+      url: "/recurring",
+      icon: IconHours24,
+    },
+    {
+      title: "Savings",
+      url: "/savings",
+      icon: IconPigMoney,
     },
   ],
   navClouds: [
@@ -148,7 +160,7 @@ const data = {
       icon: IconFileWord,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -177,5 +189,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
