@@ -162,7 +162,6 @@ const data = {
     },
   ],
 };
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [navMain, setNavMain] = React.useState(data.navMain);
   const {
@@ -173,8 +172,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     enablePaychecksRoute,
     enableRecurringRoute,
     enableSavingsRoute,
+    enableRoute,
   } = useFlags();
 
+  console.log(
+    "Flags:",
+    enableAccountsRoute,
+    enableDebtRoute,
+    enableExpensesRoute,
+    enableInvestmentsRoute,
+    enablePaychecksRoute,
+    enableRecurringRoute,
+    enableSavingsRoute,
+    enableRoute
+  );
   const applyFlags = () => {
     // make a new data.navmain array based on the flags
     const navMain = data.navMain.filter((item) => {
