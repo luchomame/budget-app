@@ -1,4 +1,4 @@
-# 🗺️ Roadmap: Budget Tracker App
+# 🗾️ Roadmap: Budget Tracker App
 
 This roadmap guides development of the Budget Tracker App from backend setup through full visual and functional polish.
 
@@ -88,6 +88,8 @@ This roadmap guides development of the Budget Tracker App from backend setup thr
 * [ ] Add net worth line chart (time series)
 * [ ] Add breakdown by category with pie/bar charts
 * [ ] Add chart toggle/filter options
+* [ ] Add rounded stacked bar chart for Money In / Money Out
+* [ ] Add optional mini Sankey-style money flow diagram
 
 ---
 
@@ -97,7 +99,13 @@ This roadmap guides development of the Budget Tracker App from backend setup thr
 * [ ] Add icons for categories and navigation
 * [ ] Add subtle animations or transitions
 * [ ] Finalize mobile view and test install as PWA
+* [ ] Add animated avatar with mood states based on spending behavior
+* [ ] Implement island metaphor (erodes when overspending, improves when saving)
+* [ ] Enable budget "modes" (Frugal, Growth, Chill)
+* [ ] Implement homescreen widget (mobile) with quick stats
+* [ ] Add behavioral nudges and spending suggestions
+* [ ] Add friendly, conversational savings prompts (e.g., emergency fund goals)
 
 ---
 
-✅ Final milestone: A beautiful, functional budget app that replaces spreadsheets, supports forecasting, and looks great on web and mobile.
+👌 Final milestone: A beautiful, functional budget app that replaces spreadsheets, supports forecasting, and looks great on web and mobile.

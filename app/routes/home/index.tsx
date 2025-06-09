@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createClient } from "~/db/supabase/server";
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/index";
 import { useLoaderData } from "react-router";
 import { supabase } from "~/db/supabase/client";
 

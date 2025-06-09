@@ -1,6 +1,6 @@
 # 💸 Budget Tracker App: Vision & Planning
 
-## 🎯 Purpose
+## 🌟 Purpose
 
 This project is a personal budgeting app designed to replace a complex spreadsheet workflow. The goal is to create a more **visual**, **interactive**, and **forecast-driven** experience for tracking income, expenses, debts, savings, and investments. It should feel intuitive, look beautiful, and allow deeper insights into monthly cash flow and net worth.
 
@@ -24,7 +24,7 @@ This project is a personal budgeting app designed to replace a complex spreadshe
 * Track fun money spending separately
 * Project end-of-month balances by account and category
 
-## 🎁 Nice-to-Haves (Future Versions)
+## 🏱 Nice-to-Haves (Future Versions)
 
 * Month-over-month spending analysis
 * Auto-import transactions via Plaid or other APIs
@@ -34,6 +34,15 @@ This project is a personal budgeting app designed to replace a complex spreadshe
 * Demo mode with fake data
 * Export charts/images
 * ML-based insights: trend detection, payoff projection, burn rate
+* Animated avatar with expressions that reflect spending behavior
+* Island metaphor: the island erodes when overspending and grows when saving
+* Budget "modes" like Frugal, Growth, Chill that adapt savings logic and avatar state
+* Rounded stacked bar chart for money in vs money out (with animated categories)
+* Circular progress bars for each savings goal
+* Homescreen widget with glanceable data: leftover spend, safe-to-spend, or savings
+* Behavioral nudges: e.g., "You're on track to overspend," or "Want to roll over to savings?"
+* Friendly conversational savings prompts (e.g., emergency fund suggestion based on expense data)
+* Optional mini Sankey flow diagram for visualizing income → accounts → categories
 
 ## 🖥️ Screens / Views
 
@@ -46,7 +55,7 @@ This project is a personal budgeting app designed to replace a complex spreadshe
 * **Recurring Charges:** View and manage subscriptions, bills, and autopay items
 * **Accounts Manager:** Manual setup for checking, savings, credit cards, etc.
 
-## 🗃️ Data Model (Initial Buckets)
+## 🗓️ Data Model (Initial Buckets)
 
 * **Accounts**: `id`, `name`, `type`, `balance`
 * **Paychecks**: `id`, `amount`, `date`, `is_recurring`
