@@ -34,6 +34,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useFlags } from "launchdarkly-react-client-sdk";
 
 const data = {
   user: {
@@ -163,6 +164,36 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [navMain, setNavMain] = React.useState(data.navMain);
+  const {
+    enableAccountsRoute,
+    enableDebtRoute,
+    enableExpensesRoute,
+    enableInvestmentsRoute,
+    enablePaychecksRoute,
+    enableRecurringRoute,
+    enableSavingsRoute,
+  } = useFlags();
+
+  const applyFlags = () => {
+    // make a new data.navmain array based on the flags
+    const navMain = data.navMain.filter((item) => {
+      if (item.title === "Accounts" && !enableAccountsRoute) return false;
+      if (item.title === "Debts" && !enableDebtRoute) return false;
+      if (item.title === "Expenses" && !enableExpensesRoute) return false;
+      if (item.title === "Investments" && !enableInvestmentsRoute) return false;
+      if (item.title === "Paychecks" && !enablePaychecksRoute) return false;
+      if (item.title === "Recurring" && !enableRecurringRoute) return false;
+      if (item.title === "Savings" && !enableSavingsRoute) return false;
+      return true;
+    });
+    setNavMain(navMain);
+  };
+
+  React.useEffect(() => {
+    applyFlags();
+  }, [enableAccountsRoute]);
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -181,7 +212,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
