@@ -39,8 +39,8 @@ export default function Layout() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <div className="flex flex-1 flex-col border-8 border-indigo-600">
-          <div className="@container/main flex flex-1 flex-col gap-2 border-8 border-red-600">
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
             <Outlet />
           </div>
         </div>

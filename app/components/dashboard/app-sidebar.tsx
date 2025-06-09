@@ -175,17 +175,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     enableRoute,
   } = useFlags();
 
-  console.log(
-    "Flags:",
-    enableAccountsRoute,
-    enableDebtRoute,
-    enableExpensesRoute,
-    enableInvestmentsRoute,
-    enablePaychecksRoute,
-    enableRecurringRoute,
-    enableSavingsRoute,
-    enableRoute
-  );
   const applyFlags = () => {
     // make a new data.navmain array based on the flags
     const navMain = data.navMain.filter((item) => {
