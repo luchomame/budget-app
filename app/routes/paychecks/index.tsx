@@ -265,7 +265,10 @@ export default function Page() {
             })}
           </ul>
           <div className="mt-4 flex justify-end items-center">
-            <Link to="#" className="text-sm text-primary hover:underline">
+            <Link
+              to="#"
+              className="text-sm text-primary hover:underline font-medium"
+            >
               View All
             </Link>
           </div>
