@@ -7,6 +7,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { parseISO, addDays, addMonths, isAfter } from "date-fns";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { PlusIcon } from "lucide-react";
 
 // TODO: Implement action to handle form submission
 
@@ -171,6 +172,7 @@ export default function Page() {
   const [employer, setEmployer] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [sheetOpen, setSheetOpen] = useState<boolean>(false);
 
   const recurringPaychecks = seedPaychecks.filter(
     (paycheck) => paycheck.is_recurring
@@ -199,18 +201,27 @@ export default function Page() {
 
   return (
     <>
-      <SiteHeader header="Paychecks" />
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 pb-8">
-        {/* Add Paycheck Section */}
-        <SectionCard
-          title="Add Paycheck"
-          description="Enter paycheck info and add it to your records"
-          action={<Button variant="default">Submit</Button>}
-        >
+      {/* Add Paycheck Section */}
+
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetTrigger asChild>
+          <Button
+            onClick={() => setSheetOpen(true)}
+            className="fixed bottom-6 right-6 z-50 p-0 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
+            size="fab"
+          >
+            <PlusIcon
+              style={{ width: "24px", height: "24px" }}
+              strokeWidth={2.5}
+            />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="p-6 max-w-md mx-auto">
+          <h2 className="text-lg font-semibold mb-4">Add Paycheck</h2>
           <Form
-            className="flex flex-col gap-4"
             onSubmit={handleSubmit}
             method="POST"
+            className="flex flex-col gap-4"
           >
             <Input
               placeholder="Employer"
@@ -233,17 +244,28 @@ export default function Page() {
                 Recurring
               </label>
             </div>
-            <Button variant="default">Submit</Button>
+            <Button type="submit">Submit</Button>
           </Form>
-        </SectionCard>
+        </SheetContent>
+      </Sheet>
 
+      <SiteHeader header="Paychecks" />
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 pb-8">
         {/* Recurring Paychecks Table */}
         <SectionCard
           title="Recurring Paychecks"
           description="Paychecks set to repeat automatically"
+          action={
+            <Link
+              to="#"
+              className="text-sm text-primary hover:underline font-medium"
+            >
+              View All
+            </Link>
+          }
         >
           <ul className="space-y-2 text-sm">
-            {recurringPaychecks.slice(0, 3).map((paycheck) => {
+            {recurringPaychecks.slice(0, 4).map((paycheck) => {
               const next = getNextDepositDate(paycheck);
               return (
                 <li className="flex flex-col border-b pb-2" key={paycheck.id}>
@@ -264,23 +286,31 @@ export default function Page() {
               );
             })}
           </ul>
-          <div className="mt-4 flex justify-end items-center">
+          {/* <div className="mt-4 flex justify-start items-center">
             <Link
               to="#"
               className="text-sm text-primary hover:underline font-medium"
             >
               View All
             </Link>
-          </div>
+          </div> */}
         </SectionCard>
 
         {/* One-Time Paychecks Table */}
         <SectionCard
           title="One-Time Paychecks"
           description="Single-instance paychecks"
+          action={
+            <Link
+              to="#"
+              className="text-sm text-primary hover:underline font-medium"
+            >
+              View All
+            </Link>
+          }
         >
           <ul className="space-y-2 text-sm">
-            {oneTimePaychecks.slice(0, 3).map((paycheck) => (
+            {oneTimePaychecks.slice(0, 4).map((paycheck) => (
               <li className="flex flex-col border-b pb-2" key={paycheck.id}>
                 <div className="flex justify-between font-medium">
                   <span>{paycheck.employer}</span>
@@ -294,14 +324,14 @@ export default function Page() {
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex justify-end items-center">
+          {/* <div className="mt-4 flex justify-end items-center">
             <Link
               to="#"
               className="text-sm text-primary hover:underline font-medium"
             >
               View all
             </Link>
-          </div>
+          </div> */}
         </SectionCard>
       </div>
     </>
