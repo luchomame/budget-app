@@ -9,8 +9,6 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
 import { LDProvider } from "launchdarkly-react-client-sdk";
 
 const context = {
@@ -44,6 +42,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <LDProvider
           clientSideID={import.meta.env.VITE_LD_KEY ?? ""}
           context={context}
+          options={{
+            streaming: true,
+          }}
         >
           {children}
         </LDProvider>

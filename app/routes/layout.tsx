@@ -5,7 +5,7 @@ import type { Route } from "./+types/layout";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { Outlet } from "react-router";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useLDReady } from "@/hooks/use-ld-client";
+import { useLDReadyWithStreaming } from "@/hooks/use-ld-client";
 import { LoadingSpinner } from "~/components/Spinner";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -19,7 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Layout() {
-  const flagsReady = useLDReady();
+  const flagsReady = useLDReadyWithStreaming();
   if (!flagsReady) {
     return (
       <div className="flex flex-col h-screen items-center justify-center">
