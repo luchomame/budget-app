@@ -133,26 +133,53 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               />
             </div>
 
-            <div className="flex items-center gap-2 mb-2">
-              <Checkbox
-                id="is_recurring"
-                checked={isRecurring}
-                onCheckedChange={(checked) => {
-                  setIsRecurring(checked === true);
-                  if (!checked) {
-                    setFrequency("");
-                    setExpectedDay("");
-                  }
-                }}
-              />
-              <Label htmlFor="is_recurring" className="text-md">
-                Is Recurring
-              </Label>
+            <div className="flex mb-2 justify-between">
+              <span className="flex items-center gap-2 py-2">
+                <Checkbox
+                  id="is_recurring"
+                  checked={isRecurring}
+                  onCheckedChange={(checked) => {
+                    setIsRecurring(checked === true);
+                    if (!checked) {
+                      setFrequency("");
+                      setExpectedDay("");
+                    }
+                  }}
+                />
+                <Label htmlFor="is_recurring" className="text-md">
+                  Is Recurring
+                </Label>
+              </span>
+              {isRecurring && (
+                <Select
+                  value={frequency}
+                  onValueChange={(val) => {
+                    setFrequency(val);
+                    if (val === "semimonthly") {
+                      setExpectedDay("1st and 15th");
+                    } else {
+                      setExpectedDay("");
+                    }
+                  }}
+                >
+                  <SelectTrigger id="frequency" className="text-md">
+                    <span>
+                      {frequency.charAt(0).toUpperCase() + frequency.slice(1) ||
+                        "Select frequency"}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="biweekly">Biweekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="semimonthly">Semimonthly</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
-            {isRecurring && (
+            {/* {isRecurring && (
               <div className="space-y-4">
-                {/* Frequency Select */}
                 <div className="flex items-center gap-1 w-full justify-between">
                   <Label htmlFor="frequency" className="text-md">
                     Frequency
@@ -181,10 +208,9 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                       <SelectItem value="semimonthly">Semimonthly</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> 
 
-                {/* Expected Day Select */}
-                <div className="flex items-center gap-1 w-full justify-between">
+             <div className="flex items-center gap-1 w-full justify-between">
                   <Label htmlFor="expected_day" className="text-md">
                     Expected Day
                   </Label>
@@ -232,9 +258,9 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                       ) : null}
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-            )}
+                </div> 
+             </div>
+            )} */}
 
             <Button type="submit">Submit</Button>
           </Form>
