@@ -26,12 +26,12 @@ export function SectionCard({
   return (
     <Card className="@container/card">
       <CardHeader>
-        {description && <CardDescription>{description}</CardDescription>}
         {title && (
           <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl">
             {title}
           </CardTitle>
         )}
+        {description && <CardDescription>{description}</CardDescription>}
         {action && <CardAction>{action}</CardAction>}
       </CardHeader>
       <CardContent>{children}</CardContent>

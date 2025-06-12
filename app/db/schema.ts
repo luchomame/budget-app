@@ -1,14 +1,7 @@
-import { pgTable, uuid, text, numeric, boolean, foreignKey, date, integer } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, uuid, numeric, text, boolean, timestamp, date, integer } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
-
-export const paychecks = pgTable("paychecks", {
-	paycheckId: uuid("paycheck_id").defaultRandom().primaryKey().notNull(),
-	employer: text(),
-	amount: numeric().default('0').notNull(),
-	isRecurring: boolean("is_recurring").default(false),
-});
 
 export const allocations = pgTable("allocations", {
 	allocationId: uuid("allocation_id").defaultRandom().primaryKey().notNull(),
@@ -34,6 +27,17 @@ export const spendingAccounts = pgTable("spending_accounts", {
 	name: text().notNull(),
 	type: text().notNull(),
 	balance: numeric().default('0'),
+});
+
+export const paychecks = pgTable("paychecks", {
+	paycheckId: uuid("paycheck_id").defaultRandom().primaryKey().notNull(),
+	employer: text(),
+	amount: numeric().default('0').notNull(),
+	isRecurring: boolean("is_recurring").default(false),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	depositDate: date("deposit_date"),
+	frequency: text(),
+	expectedDay: text("expected_day"),
 });
 
 export const expenses = pgTable("expenses", {

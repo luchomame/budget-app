@@ -5,197 +5,80 @@ import { SectionCard } from "~/components/SectionCard";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
-import { parseISO, addDays, addMonths, isAfter } from "date-fns";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PlusIcon } from "lucide-react";
+import { getNextDepositDate } from "./helper";
+import type { Route } from "./+types/index";
+import { paychecks } from "~/db/schema";
+import { db } from "~/db";
+import { desc, eq } from "drizzle-orm";
+import { Label } from "~/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "~/components/ui/select";
 
-// TODO: Implement action to handle form submission
+export async function loader({ request }: Route.LoaderArgs) {
+  try {
+    // Top 5 recurring paychecks (is_recurring = true)
+    const recurring = await db
+      .select()
+      .from(paychecks)
+      .where(eq(paychecks.isRecurring, true))
+      .orderBy(desc(paychecks.createdAt))
+      .limit(5);
 
-// seed data
-type Paycheck = {
-  id: number;
-  employer: string;
-  amount: number;
-  is_recurring: boolean;
-  created_at: string;
-  deposit_date?: string;
-  frequency?: "weekly" | "biweekly" | "monthly" | "semimonthly";
-  expected_day?: string;
-};
+    // Top 5 one-time paychecks (is_recurring = false)
+    const oneTime = await db
+      .select()
+      .from(paychecks)
+      .where(eq(paychecks.isRecurring, false))
+      .orderBy(desc(paychecks.createdAt))
+      .limit(5);
 
-const seedPaychecks: Paycheck[] = [
-  {
-    id: 1,
-    employer: "Acme Corp",
-    amount: 2000,
-    is_recurring: true,
-    created_at: "2025-06-01T08:00:00Z",
-    deposit_date: "2025-06-14",
-    frequency: "biweekly",
-    expected_day: "Fridays",
-  },
-  {
-    id: 2,
-    employer: "Side Hustle",
-    amount: 150,
-    is_recurring: false,
-    created_at: "2025-05-28T12:00:00Z",
-    deposit_date: "2025-05-28",
-  },
-  {
-    id: 3,
-    employer: "Government Stipend",
-    amount: 500,
-    is_recurring: true,
-    created_at: "2025-06-01T09:00:00Z",
-    deposit_date: "2025-06-01",
-    frequency: "monthly",
-    expected_day: "1st of month",
-  },
-  {
-    id: 4,
-    employer: "Freelance Client",
-    amount: 800,
-    is_recurring: false,
-    created_at: "2025-05-15T11:30:00Z",
-    deposit_date: "2025-05-15",
-  },
-  {
-    id: 5,
-    employer: "TechCo",
-    amount: 2500,
-    is_recurring: true,
-    created_at: "2025-06-03T10:45:00Z",
-    deposit_date: "2025-06-15",
-    frequency: "semimonthly",
-    expected_day: "1st and 15th",
-  },
-  {
-    id: 6,
-    employer: "Funko Corp",
-    amount: 2000,
-    is_recurring: true,
-    created_at: "2025-06-04T14:20:00Z",
-    deposit_date: "2025-06-21",
-    frequency: "weekly",
-    expected_day: "Fridays",
-  },
-  {
-    id: 7,
-    employer: "Over Hustle",
-    amount: 150,
-    is_recurring: false,
-    created_at: "2025-05-30T16:00:00Z",
-    deposit_date: "2025-05-30",
-  },
-  {
-    id: 8,
-    employer: "Government Stupid",
-    amount: 500,
-    is_recurring: true,
-    created_at: "2025-06-01T07:30:00Z",
-    deposit_date: "2025-06-01",
-    frequency: "monthly",
-    expected_day: "1st of month",
-  },
-  {
-    id: 9,
-    employer: "Poorlance Client",
-    amount: 800,
-    is_recurring: false,
-    created_at: "2025-05-18T13:45:00Z",
-    deposit_date: "2025-05-18",
-  },
-  {
-    id: 10,
-    employer: "FinHub",
-    amount: 2500,
-    is_recurring: true,
-    created_at: "2025-06-06T08:15:00Z",
-    deposit_date: "2025-06-15",
-    frequency: "semimonthly",
-    expected_day: "1st and 15th",
-  },
-];
-
-function getNextDepositDate(paycheck: Paycheck): string | null {
-  const { deposit_date, frequency } = paycheck;
-  if (!deposit_date || !frequency) return null;
-
-  let current = parseISO(deposit_date);
-  const today = new Date();
-
-  // Guard in case unknown frequency
-  let intervalDays: number | undefined = undefined;
-
-  switch (frequency) {
-    case "weekly":
-      intervalDays = 7;
-      break;
-    case "biweekly":
-      intervalDays = 14;
-      break;
-    case "monthly":
-      intervalDays = 30;
-      break;
-    case "semimonthly":
-      break;
-    default:
-      return null;
+    return { recurring, oneTime };
+  } catch (error) {
+    console.error("Error fetching paychecks:", error);
+    return new Response("Error fetching paychecks", { status: 500 });
   }
-
-  if (frequency === "semimonthly") {
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const fifteenth = new Date(currentYear, currentMonth, 15);
-    const first = new Date(currentYear, currentMonth, 1);
-
-    const nextDate =
-      isAfter(first, today) && isAfter(fifteenth, today)
-        ? first
-        : isAfter(fifteenth, today)
-        ? fifteenth
-        : new Date(currentYear, currentMonth + 1, 1);
-
-    return nextDate.toISOString().split("T")[0];
-  }
-
-  // Default recurring case (weekly, biweekly, monthly)
-  while (!isAfter(current, today)) {
-    current = addDays(current, intervalDays!);
-  }
-
-  return current.toISOString().split("T")[0];
 }
 
-export default function Page() {
+export default function Page({ loaderData }: Route.ComponentProps) {
   const [employer, setEmployer] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [depositDate, setDepositDate] = useState<string>("");
+  const [frequency, setFrequency] = useState<string>("");
+  const [expectedDay, setExpectedDay] = useState<string>("");
+
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
 
-  const recurringPaychecks = seedPaychecks.filter(
-    (paycheck) => paycheck.is_recurring
-  );
-  const oneTimePaychecks = seedPaychecks.filter(
-    (paycheck) => !paycheck.is_recurring
-  );
+  const { recurring: recurringPaychecks, oneTime: oneTimePaychecks } =
+    loaderData;
 
-  recurringPaychecks.sort(
-    (a, b) =>
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
+  console.log("Recurring Paychecks:", recurringPaychecks);
+  console.log("One-Time Paychecks:", oneTimePaychecks);
 
-  oneTimePaychecks.sort(
-    (a, b) =>
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
+  const getExpectedDayOptions = (frequency: string) => {
+    if (frequency === "weekly" || frequency === "biweekly") {
+      return ["monday", "tuesday", "wednesday", "thursday", "friday"];
+    }
+
+    if (frequency === "monthly") {
+      return ["1st", "last"];
+    }
+
+    return [];
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     alert(
-      `Paycheck submitted: \nEmployer: ${employer} \nAmount: ${amount} \nRecurring: ${isRecurring}`
+      `Paycheck submitted: \nEmployer: ${employer} \nAmount: ${amount} \nRecurring: ${isRecurring} \nDeposit Date: ${depositDate}`
     );
   };
 
@@ -217,7 +100,8 @@ export default function Page() {
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="p-6 max-w-md mx-auto">
-          <h2 className="text-lg font-semibold mb-4">Add Paycheck</h2>
+          <h2 className="text-lg font-semibold">Add Paycheck</h2>
+          <Separator className="mb-2" />
           <Form
             onSubmit={handleSubmit}
             method="POST"
@@ -234,16 +118,124 @@ export default function Page() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <div className="flex items-center gap-2">
+
+            <div className="flex items-center gap-1 w-full justify-between">
+              <Label htmlFor="deposit_date" className="text-md">
+                Deposit Date
+              </Label>
+              <Input
+                type="date"
+                id="deposit_date"
+                name="deposit_date"
+                value={depositDate}
+                onChange={(e) => setDepositDate(e.target.value)}
+                className="w-1/2"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 mb-2">
               <Checkbox
                 id="is_recurring"
                 checked={isRecurring}
-                onCheckedChange={(checked) => setIsRecurring(checked === true)}
+                onCheckedChange={(checked) => {
+                  setIsRecurring(checked === true);
+                  if (!checked) {
+                    setFrequency("");
+                    setExpectedDay("");
+                  }
+                }}
               />
-              <label htmlFor="is_recurring" className="text-sm">
-                Recurring
-              </label>
+              <Label htmlFor="is_recurring" className="text-md">
+                Is Recurring
+              </Label>
             </div>
+
+            {isRecurring && (
+              <div className="space-y-4">
+                {/* Frequency Select */}
+                <div className="flex items-center gap-1 w-full justify-between">
+                  <Label htmlFor="frequency" className="text-md">
+                    Frequency
+                  </Label>
+                  <Select
+                    value={frequency}
+                    onValueChange={(val) => {
+                      setFrequency(val);
+                      if (val === "semimonthly") {
+                        setExpectedDay("1st and 15th");
+                      } else {
+                        setExpectedDay("");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-1/2" id="frequency">
+                      <span>
+                        {frequency.charAt(0).toUpperCase() +
+                          frequency.slice(1) || "Select frequency"}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="biweekly">Biweekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="semimonthly">Semimonthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Expected Day Select */}
+                <div className="flex items-center gap-1 w-full justify-between">
+                  <Label htmlFor="expected_day" className="text-md">
+                    Expected Day
+                  </Label>
+
+                  <Select value={expectedDay} onValueChange={setExpectedDay}>
+                    <SelectTrigger className="w-1/2" id="expected_day">
+                      <span>
+                        {expectedDay.charAt(0).toUpperCase() +
+                          expectedDay.slice(1) || "Select expected day"}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {frequency === "semimonthly" ? (
+                        <SelectItem value="1st and 15th">
+                          1st and 15th
+                        </SelectItem>
+                      ) : frequency === "weekly" || frequency === "biweekly" ? (
+                        <>
+                          <div className="px-2 text-xs text-muted-foreground">
+                            Weekdays
+                          </div>
+                          {[
+                            "monday",
+                            "tuesday",
+                            "wednesday",
+                            "thursday",
+                            "friday",
+                          ].map((day) => (
+                            <SelectItem key={day} value={day}>
+                              {day.charAt(0).toUpperCase() + day.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </>
+                      ) : frequency === "monthly" ? (
+                        <>
+                          <div className="px-2 text-xs text-muted-foreground">
+                            Calendar Dates
+                          </div>
+                          {["1st", "last"].map((date) => (
+                            <SelectItem key={date} value={date}>
+                              {date === "last" ? "Last day of month" : "1st"}
+                            </SelectItem>
+                          ))}
+                        </>
+                      ) : null}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
             <Button type="submit">Submit</Button>
           </Form>
         </SheetContent>
@@ -268,11 +260,14 @@ export default function Page() {
             {recurringPaychecks.slice(0, 4).map((paycheck) => {
               const next = getNextDepositDate(paycheck);
               return (
-                <li className="flex flex-col border-b pb-2" key={paycheck.id}>
+                <li
+                  className="flex flex-col border-b pb-2"
+                  key={paycheck.paycheckId}
+                >
                   <div className="flex justify-between font-medium">
                     <span>{paycheck.employer}</span>
                     <span className="tabular-nums">
-                      ${paycheck.amount.toFixed(2)}
+                      ${Number(paycheck.amount).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex text-xs text-muted-foreground justify-start">
@@ -311,15 +306,18 @@ export default function Page() {
         >
           <ul className="space-y-2 text-sm">
             {oneTimePaychecks.slice(0, 4).map((paycheck) => (
-              <li className="flex flex-col border-b pb-2" key={paycheck.id}>
+              <li
+                className="flex flex-col border-b pb-2"
+                key={paycheck.paycheckId}
+              >
                 <div className="flex justify-between font-medium">
                   <span>{paycheck.employer}</span>
                   <span className="tabular-nums">
-                    ${paycheck.amount.toFixed(2)}
+                    ${Number(paycheck.amount).toFixed(2)}
                   </span>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {paycheck.deposit_date && `Paid on: ${paycheck.deposit_date}`}
+                  {paycheck.depositDate && `Paid on: ${paycheck.depositDate}`}
                 </div>
               </li>
             ))}
