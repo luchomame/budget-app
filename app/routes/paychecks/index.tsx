@@ -249,7 +249,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           description="Paychecks set to repeat automatically"
           action={
             <Link
-              to="#"
+              to="/paychecks/all?type=one-time"
               className="text-sm text-primary hover:underline font-medium"
             >
               View All
@@ -281,14 +281,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               );
             })}
           </ul>
-          {/* <div className="mt-4 flex justify-start items-center">
-            <Link
-              to="#"
-              className="text-sm text-primary hover:underline font-medium"
-            >
-              View All
-            </Link>
-          </div> */}
         </SectionCard>
 
         {/* One-Time Paychecks Table */}
@@ -297,7 +289,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           description="Single-instance paychecks"
           action={
             <Link
-              to="#"
+              to="/paychecks/all?type=one-time"
               className="text-sm text-primary hover:underline font-medium"
             >
               View All
@@ -322,14 +314,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               </li>
             ))}
           </ul>
-          {/* <div className="mt-4 flex justify-end items-center">
-            <Link
-              to="#"
-              className="text-sm text-primary hover:underline font-medium"
-            >
-              View all
-            </Link>
-          </div> */}
         </SectionCard>
       </div>
     </>

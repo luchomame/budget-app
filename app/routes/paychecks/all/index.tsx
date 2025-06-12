@@ -8,6 +8,7 @@ import {
   useSearchParams,
   type LoaderFunctionArgs,
 } from "react-router";
+import { SiteHeader } from "~/components/dashboard/site-header";
 
 // ---- Loader Logic ----
 
@@ -92,38 +93,39 @@ export default function ViewAllPaychecksPage() {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-xl font-semibold">View All Paychecks</h1>
+    <>
+      <SiteHeader header="View All Paychecks" />
+      <div className="p-4 space-y-4">
+        <div className="flex gap-2">
+          <button onClick={() => updateFilter("recurring", range)}>
+            Recurring
+          </button>
+          <button onClick={() => updateFilter("one-time", range)}>
+            One-Time
+          </button>
+          <button onClick={() => updateFilter("all", range)}>All</button>
 
-      <div className="flex gap-2">
-        <button onClick={() => updateFilter("recurring", range)}>
-          Recurring
-        </button>
-        <button onClick={() => updateFilter("one-time", range)}>
-          One-Time
-        </button>
-        <button onClick={() => updateFilter("all", range)}>All</button>
+          <button onClick={() => updateFilter(type, "30d")}>30d</button>
+          <button onClick={() => updateFilter(type, "60d")}>60d</button>
+          <button onClick={() => updateFilter(type, "1y")}>1y</button>
+        </div>
 
-        <button onClick={() => updateFilter(type, "30d")}>30d</button>
-        <button onClick={() => updateFilter(type, "60d")}>60d</button>
-        <button onClick={() => updateFilter(type, "1y")}>1y</button>
+        <ul className="divide-y text-sm">
+          {paychecks.map((p) => (
+            <li key={p.id} className="py-2">
+              <div className="flex justify-between">
+                <span>{p.employer}</span>
+                <span className="tabular-nums">${p.amount.toFixed(2)}</span>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {p.deposit_date} · {p.is_recurring ? "Recurring" : "One-time"}{" "}
+                {p.frequency && `· ${p.frequency}`}{" "}
+                {p.expected_day && `· ${p.expected_day}`}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
-
-      <ul className="divide-y text-sm">
-        {paychecks.map((p) => (
-          <li key={p.id} className="py-2">
-            <div className="flex justify-between">
-              <span>{p.employer}</span>
-              <span className="tabular-nums">${p.amount.toFixed(2)}</span>
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {p.deposit_date} · {p.is_recurring ? "Recurring" : "One-time"}{" "}
-              {p.frequency && `· ${p.frequency}`}{" "}
-              {p.expected_day && `· ${p.expected_day}`}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </>
   );
 }
