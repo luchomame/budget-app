@@ -15,7 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "~/components/ui/select";
-import { PlusIcon } from "lucide-react";
+import { ListChecks, PlusIcon } from "lucide-react";
 // DB
 import { paychecks } from "~/db/schema";
 import { db } from "~/db";
@@ -259,6 +259,15 @@ export default function Page({ loaderData }: Route.ComponentProps) {
             ))}
           </ul>
         </SectionCard>
+        <div className="px-4 pt-1 text-center text-sm text-muted-foreground">
+          <Link
+            to="/paychecks/all?type=all"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-md transition hover:bg-primary/90"
+          >
+            <ListChecks className="h-4 w-4" strokeWidth={2.25} />
+            View All Paychecks
+          </Link>
+        </div>
       </div>
     </>
   );
