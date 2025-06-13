@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { Form, Link } from "react-router";
+// UI
 import { SiteHeader } from "~/components/dashboard/site-header";
 import { SectionCard } from "~/components/SectionCard";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { PlusIcon } from "lucide-react";
-import { getNextDepositDate } from "./helper";
-import type { Route } from "./+types/index";
-import { paychecks } from "~/db/schema";
-import { db } from "~/db";
-import { desc, eq } from "drizzle-orm";
 import { Label } from "~/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -20,6 +15,14 @@ import {
   SelectItem,
   SelectTrigger,
 } from "~/components/ui/select";
+import { PlusIcon } from "lucide-react";
+// DB
+import { paychecks } from "~/db/schema";
+import { db } from "~/db";
+import { desc, eq } from "drizzle-orm";
+// utility
+import { getNextDepositDate } from "./helper";
+import type { Route } from "./+types/index";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -28,7 +31,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       .select()
       .from(paychecks)
       .where(eq(paychecks.isRecurring, true))
-      .orderBy(desc(paychecks.createdAt))
+      .orderBy(desc(paychecks.depositDate))
       .limit(5);
 
     // Top 5 one-time paychecks (is_recurring = false)
@@ -36,7 +39,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       .select()
       .from(paychecks)
       .where(eq(paychecks.isRecurring, false))
-      .orderBy(desc(paychecks.createdAt))
+      .orderBy(desc(paychecks.depositDate))
       .limit(5);
 
     return { recurring, oneTime };
@@ -177,91 +180,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                 </Select>
               )}
             </div>
-
-            {/* {isRecurring && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-1 w-full justify-between">
-                  <Label htmlFor="frequency" className="text-md">
-                    Frequency
-                  </Label>
-                  <Select
-                    value={frequency}
-                    onValueChange={(val) => {
-                      setFrequency(val);
-                      if (val === "semimonthly") {
-                        setExpectedDay("1st and 15th");
-                      } else {
-                        setExpectedDay("");
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="w-1/2" id="frequency">
-                      <span>
-                        {frequency.charAt(0).toUpperCase() +
-                          frequency.slice(1) || "Select frequency"}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="biweekly">Biweekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="semimonthly">Semimonthly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div> 
-
-             <div className="flex items-center gap-1 w-full justify-between">
-                  <Label htmlFor="expected_day" className="text-md">
-                    Expected Day
-                  </Label>
-
-                  <Select value={expectedDay} onValueChange={setExpectedDay}>
-                    <SelectTrigger className="w-1/2" id="expected_day">
-                      <span>
-                        {expectedDay.charAt(0).toUpperCase() +
-                          expectedDay.slice(1) || "Select expected day"}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {frequency === "semimonthly" ? (
-                        <SelectItem value="1st and 15th">
-                          1st and 15th
-                        </SelectItem>
-                      ) : frequency === "weekly" || frequency === "biweekly" ? (
-                        <>
-                          <div className="px-2 text-xs text-muted-foreground">
-                            Weekdays
-                          </div>
-                          {[
-                            "monday",
-                            "tuesday",
-                            "wednesday",
-                            "thursday",
-                            "friday",
-                          ].map((day) => (
-                            <SelectItem key={day} value={day}>
-                              {day.charAt(0).toUpperCase() + day.slice(1)}
-                            </SelectItem>
-                          ))}
-                        </>
-                      ) : frequency === "monthly" ? (
-                        <>
-                          <div className="px-2 text-xs text-muted-foreground">
-                            Calendar Dates
-                          </div>
-                          {["1st", "last"].map((date) => (
-                            <SelectItem key={date} value={date}>
-                              {date === "last" ? "Last day of month" : "1st"}
-                            </SelectItem>
-                          ))}
-                        </>
-                      ) : null}
-                    </SelectContent>
-                  </Select>
-                </div> 
-             </div>
-            )} */}
-
             <Button type="submit">Submit</Button>
           </Form>
         </SheetContent>
@@ -275,7 +193,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           description="Paychecks set to repeat automatically"
           action={
             <Link
-              to="/paychecks/all?type=one-time"
+              to="/paychecks/all?type=recurring"
               className="text-sm text-primary hover:underline font-medium"
             >
               View All
