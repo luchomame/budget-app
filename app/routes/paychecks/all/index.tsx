@@ -1,4 +1,5 @@
 // paychecks/all.tsx
+// TODO: Make these shits editable!!! want to be able to click on a paycheck, pull up a sheet, and edit it!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 import * as React from "react";
 import { type Paycheck } from "../helper";
 import {
@@ -97,6 +98,9 @@ export default function ViewAllPaychecksPage({
   const [searchParams, setSearchParams] = useSearchParams();
   const [paychecks, setPaychecks] = React.useState<Paycheck[]>(records || []);
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
+  const [selectedPaycheck, setSelectedPaycheck] =
+    React.useState<Paycheck | null>(null);
+  const [editSheetOpen, setEditSheetOpen] = React.useState(false);
 
   const type = searchParams.get("type") ?? "all";
   const range = searchParams.get("range") ?? "30d";
@@ -166,7 +170,23 @@ export default function ViewAllPaychecksPage({
       <div className="p-4 space-y-4 pb-12">
         <ul className="divide-y text-sm">
           {paychecks.map((p) => (
-            <li key={p.paycheckId} className="py-2">
+            <li
+              key={p.paycheckId}
+              className="py-2 cursor-pointer px-2 rounded-sm transition-colors hover:bg-muted/50 active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={() => {
+                console.log("Selected paycheck:", p);
+                setSelectedPaycheck(p);
+                setEditSheetOpen(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  console.log("Key down on paycheck:", p);
+                  e.preventDefault();
+                  setSelectedPaycheck(p);
+                  setEditSheetOpen(true);
+                }
+              }}
+            >
               <div className="flex justify-between">
                 <span>{p.employer}</span>
                 <span className="tabular-nums">
@@ -180,6 +200,7 @@ export default function ViewAllPaychecksPage({
             </li>
           ))}
         </ul>
+
         <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
           <SheetTrigger asChild>
             <Button
