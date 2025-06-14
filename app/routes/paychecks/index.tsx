@@ -30,6 +30,7 @@ import { desc, eq } from "drizzle-orm";
 // utility
 import { getNextDepositDate } from "./helper";
 import type { Route } from "./+types/index";
+import FAB from "~/components/FAB";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -85,7 +86,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger asChild>
-          <Button
+          {/* <Button
             onClick={() => setSheetOpen(true)}
             className="fixed bottom-6 right-6 z-50 p-0 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
             size="fab"
@@ -94,7 +95,8 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               style={{ width: "24px", height: "24px" }}
               strokeWidth={2.5}
             />
-          </Button>
+          </Button> */}
+          <FAB onClick={() => setSheetOpen(true)} Icon={PlusIcon} />
         </SheetTrigger>
         <SheetContent side="bottom" className="p-6 max-w-md mx-auto">
           <SheetHeader className="flex flex-col items-center justify-between text-left">

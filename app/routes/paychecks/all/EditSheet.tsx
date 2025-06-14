@@ -25,6 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import FAB from "~/components/FAB";
 
 type props = {
   fetcher: FetcherWithComponents<any>;
@@ -241,17 +242,11 @@ export default function EditSheet({
           )}
         </fetcher.Form>
 
-        <Button
-          variant="outline"
-          size="fab"
-          className="fixed bottom-6 right-6 rounded-full shadow-md bg-primary text-primary-foreground"
-          onClick={() => {
-            setIsEditing(true);
-          }}
+        <FAB
+          onClick={() => setIsEditing(true)}
+          Icon={Pencil}
           hidden={isEditing}
-        >
-          <Pencil style={{ width: "20px", height: "20px" }} />
-        </Button>
+        />
       </SheetContent>
     </Sheet>
   );
