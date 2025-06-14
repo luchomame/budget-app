@@ -6,7 +6,14 @@ import { SectionCard } from "~/components/SectionCard";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Label } from "~/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -55,7 +62,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [depositDate, setDepositDate] = useState<string>("");
   const [frequency, setFrequency] = useState<string>("");
-  const [expectedDay, setExpectedDay] = useState<string>("");
 
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
 
@@ -64,18 +70,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
 
   console.log("Recurring Paychecks:", recurringPaychecks);
   console.log("One-Time Paychecks:", oneTimePaychecks);
-
-  const getExpectedDayOptions = (frequency: string) => {
-    if (frequency === "weekly" || frequency === "biweekly") {
-      return ["monday", "tuesday", "wednesday", "thursday", "friday"];
-    }
-
-    if (frequency === "monthly") {
-      return ["1st", "last"];
-    }
-
-    return [];
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,8 +97,15 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="p-6 max-w-md mx-auto">
-          <h2 className="text-lg font-semibold">Add Paycheck</h2>
-          <Separator className="mb-2" />
+          <SheetHeader className="flex flex-col items-center justify-between text-left">
+            <SheetTitle className="text-xl font-semibold">
+              Add Paycheck
+            </SheetTitle>
+            <Separator className="" />
+
+            <SheetDescription className="sr-only"></SheetDescription>
+          </SheetHeader>
+
           <Form
             onSubmit={handleSubmit}
             method="POST"
@@ -145,7 +146,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                     setIsRecurring(checked === true);
                     if (!checked) {
                       setFrequency("");
-                      setExpectedDay("");
                     }
                   }}
                 />
@@ -158,11 +158,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                   value={frequency}
                   onValueChange={(val) => {
                     setFrequency(val);
-                    if (val === "semimonthly") {
-                      setExpectedDay("1st and 15th");
-                    } else {
-                      setExpectedDay("");
-                    }
                   }}
                 >
                   <SelectTrigger id="frequency" className="text-md">
