@@ -8,16 +8,17 @@ import {
   useSearchParams,
   type LoaderFunctionArgs,
 } from "react-router";
-import { SiteHeader } from "~/components/dashboard/site-header";
 import { paychecks } from "~/db/schema";
 import { db } from "~/db";
-import { desc, eq, gt, lt } from "drizzle-orm";
+import { desc, gt } from "drizzle-orm";
 import type { Route } from "./+types/index";
 import { Button } from "~/components/ui/button";
-import { ArrowLeftIcon, SlidersHorizontal } from "lucide-react";
+import { ArrowLeftIcon, Pencil, SlidersHorizontal } from "lucide-react";
 import { Label } from "~/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
 import { Separator } from "~/components/ui/separator";
+import EditSheet from "./EditSheet";
+import FilterSheet from "./FilterSheet";
 
 // ---- Loader Logic ----
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -102,7 +103,14 @@ export default function ViewAllPaychecksPage({
     React.useState<Paycheck | null>(null);
   const [editSheetOpen, setEditSheetOpen] = React.useState(false);
 
-  const type = searchParams.get("type") ?? "all";
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  const type: "all" | "one-time" | "recurring" =
+    searchParams.get("type") == "all"
+      ? "all"
+      : searchParams.get("type") === "recurring"
+      ? "recurring"
+      : "one-time";
   const range = searchParams.get("range") ?? "30d";
 
   const fetchedDataRef = React.useRef<Paycheck[] | null>(records || []);
@@ -167,7 +175,7 @@ export default function ViewAllPaychecksPage({
         </div>
       </header>
 
-      <div className="p-4 space-y-4 pb-12">
+      <div className="pl-2 pr-2 mb-2 space-y-4 ">
         <ul className="divide-y text-sm">
           {paychecks.map((p) => (
             <li
@@ -199,65 +207,27 @@ export default function ViewAllPaychecksPage({
               </div>
             </li>
           ))}
+          <p className="flex justify-center  mt-4 text-sm text-muted-foreground">
+            End of Paychecks
+          </p>
         </ul>
 
-        <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
-          <SheetTrigger asChild>
-            <Button
-              onClick={() => setFilterSheetOpen(true)}
-              className="fixed bottom-6 right-6 z-50 p-0 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
-              size="fab"
-            >
-              <SlidersHorizontal className="w-5 h-5" strokeWidth={2.5} />
-            </Button>
-          </SheetTrigger>
+        <EditSheet
+          fetcher={fetcher}
+          editSheetOpen={editSheetOpen}
+          setEditSheetOpen={setEditSheetOpen}
+          selectedPaycheck={selectedPaycheck}
+          setIsEditing={setIsEditing}
+          isEditing={isEditing}
+        />
 
-          <SheetContent side="bottom" className="p-6 max-w-md mx-auto">
-            <h2 className="text-lg font-semibold">Filter Paychecks</h2>
-            <Separator className="mb-4" />
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-sm">Type</Label>
-                <div className="flex gap-2">
-                  <Button
-                    variant={type === "all" ? "default" : "outline"}
-                    onClick={() => updateFilter("all", range)}
-                  >
-                    All
-                  </Button>
-                  <Button
-                    variant={type === "recurring" ? "default" : "outline"}
-                    onClick={() => updateFilter("recurring", range)}
-                  >
-                    Recurring
-                  </Button>
-                  <Button
-                    variant={type === "one-time" ? "default" : "outline"}
-                    onClick={() => updateFilter("one-time", range)}
-                  >
-                    One-Time
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm">Range</Label>
-                <div className="flex flex-wrap gap-2">
-                  {["30d", "60d", "6m", "1y", "2y"].map((r) => (
-                    <Button
-                      key={r}
-                      variant={range === r ? "default" : "outline"}
-                      onClick={() => updateFilter(type, r)}
-                    >
-                      {r}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+        <FilterSheet
+          filterSheetOpen={filterSheetOpen}
+          setFilterSheetOpen={setFilterSheetOpen}
+          type={type}
+          range={range}
+          updateFilter={updateFilter}
+        />
       </div>
     </>
   );
