@@ -1,14 +1,20 @@
-import { SiteHeader } from "~/components/dashboard/site-header";
+import { mockAccounts } from "./mockAccounts";
+import { columns } from "./columns";
+import { DataTable } from "@/components/data-table";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
-export default function Page() {
+export default function AccountsPage() {
   return (
-    <>
-        <SiteHeader header="Accounts" />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-          </div>
-        </div>
-
-    </>
-  )
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Accounts</h1>
+        <Button variant="default">
+          <Plus className="mr-2 h-4 w-4" />
+          Add Account
+        </Button>
+      </div>
+      <DataTable columns={columns} data={mockAccounts} />
+    </div>
+  );
 }
